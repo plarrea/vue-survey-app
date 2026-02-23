@@ -8,7 +8,8 @@
         >
       </div>
       <p v-if="isLoading">Loading...</p>
-      <ul v-if="!isLoading">
+      <p v-if="error">{{ error }}</p>
+      <ul v-else-if="!isLoading && results.length > 0">
         <survey-result
           v-for="result in results"
           :key="result.id"
@@ -16,6 +17,7 @@
           :rating="result.rating"
         ></survey-result>
       </ul>
+      <p v-else>No stored surveys found.</p>
     </base-card>
   </section>
 </template>
@@ -33,17 +35,18 @@ export default {
     return {
       results: [],
       isLoading: false,
+      error: null,
     };
   },
   methods: {
     loadExperiences() {
       this.isLoading = true;
+      this.error = null;
       fetch(SURVEY_URL)
         .then((response) => {
           if (response.ok) {
             return response.json();
           }
-          // todo: handle error
         })
         .then((data) => {
           this.isLoading = false;
@@ -56,6 +59,11 @@ export default {
             });
           }
           this.results = results;
+        })
+        .catch((error) => {
+          console.log(error);
+          this.isLoading = false;
+          this.error = "Failed to fetch data - please try again.";
         });
     },
   },
