@@ -50,6 +50,8 @@
 </template>
 
 <script>
+const SURVEY_URL = `${process.env.VUE_APP_FIRE_BASE_URL}/surveys.json`;
+
 export default {
   data() {
     return {
@@ -58,7 +60,7 @@ export default {
       invalidInput: false,
     };
   },
-  emits: ["survey-submit"],
+  // emits: ["survey-submit"],
   methods: {
     submitSurvey() {
       if (this.enteredName === "" || !this.chosenRating) {
@@ -67,9 +69,20 @@ export default {
       }
       this.invalidInput = false;
 
-      this.$emit("survey-submit", {
-        userName: this.enteredName,
-        rating: this.chosenRating,
+      // this.$emit("survey-submit", {
+      //   userName: this.enteredName,
+      //   rating: this.chosenRating,
+      // });
+
+      fetch(SURVEY_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: this.enteredName,
+          rating: this.chosenRating,
+        }),
       });
 
       this.enteredName = "";
